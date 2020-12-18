@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace DGFactory
 {
-    public delegate void OnTabMachine(Machine machine);
-    
+    public delegate void OnTabMachine(MachineController self, Machine machine);
+
     public class MachineController : MonoBehaviour
     {
         /// <summary>
@@ -13,6 +13,35 @@ namespace DGFactory
         /// </summary>
         private Machine _currentMachine;
         private OnTabMachine _onTap;
+        private Outline _outline;
+
+        private Transform _detailAnchor;
+
+        public bool IsSelected{
+            get
+            {
+                return _outline.enabled;
+            }
+        }
+
+        /// <summary>
+        /// 详情相机对准位置
+        /// </summary>
+        public Transform DetailAnchor
+        {
+            get
+            {
+                return _detailAnchor;
+            }
+        }
+
+        private void Awake()
+        {
+            _outline = GetComponent<Outline>();
+            _outline.enabled = false;
+
+            _detailAnchor = transform.Find("DetailAnchor");
+        }
 
         public void Refresh(Machine machine, OnTabMachine onTap)
         {
@@ -31,10 +60,19 @@ namespace DGFactory
                 {
                     if (_onTap != null)
                     {
-                        _onTap(_currentMachine);
+                        _onTap(this, _currentMachine);
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 是否显示外框
+        /// </summary>
+        /// <param name="isVisible"></param>
+        public void SetOutline(bool isVisible)
+        {
+            _outline.enabled = isVisible;
         }
     }
 
