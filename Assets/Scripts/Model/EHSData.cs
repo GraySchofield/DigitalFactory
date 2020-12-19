@@ -53,6 +53,7 @@ namespace DGFactory{
             ButtonRight = true;
             ButtonEmergency = false;
             DoorData = 0f;
+
         }
     }
 }

@@ -9,7 +9,6 @@ namespace DGFactory{
     public enum ViewState
     {
         FACTORY_OVERVIEW = 1, //工厂全景
-        TRANSITION = 2, //状态转换的动画中
         MACHINE_DETAIL = 3    //机器详情
     }
 
@@ -21,12 +20,12 @@ namespace DGFactory{
         public Factory CurrentFactory;
         public MachineController[] MachineControllers;
         private ViewState currentViewState;
-        private Vector3 _originalCamraPosition;
+        private TransitionAndLookAt _cameraTransitor;
 
         protected void Awake()
         {
             base.Awake();
-            _originalCamraPosition = Camera.main.transform.position;
+            _cameraTransitor = Camera.main.GetComponent<TransitionAndLookAt>();
             currentViewState = ViewState.FACTORY_OVERVIEW;
             CurrentFactory = new Factory();
 
@@ -63,18 +62,34 @@ namespace DGFactory{
                     MachineControllers[i].Refresh(CurrentFactory.CurrentLines["门铰链"].Machines[i], (mControler, machine) => {
                         Debug.Log("Cicked Machine : " + machine.Name);
                         setAllMachineOutline(false);
-
-                        if(this.currentViewState == ViewState.FACTORY_OVERVIEW)
-                        {
-                            //如果是工厂全景，这里要放大到工厂视图
-                            //TODO:
-                            this.currentViewState = ViewState.TRANSITION;
-                            mControler.SetOutline(true);
-
-
-                        }
+                        showMachineDetail(mControler);
                     });
                 }
+            }
+        }
+
+        private void showMachineDetail(MachineController mControler)
+        {
+            if (this.currentViewState == ViewState.FACTORY_OVERVIEW)
+            {
+                //如果是工厂全景，这里要放大到工厂视图
+                //TODO:
+                _cameraTransitor.transitionTo(mControler.DetailAnchor.position, mControler.DetailAnchor.rotation);
+                currentViewState = ViewState.MACHINE_DETAIL;
+                mControler.SetOutline(true);
+            }
+        }
+
+        private void hideMachineDetail()
+        {
+            if (this.currentViewState == ViewState.MACHINE_DETAIL)
+            {
+                //如果是工厂视图要退出到工厂全景
+                //TODO:
+                _cameraTransitor.transitionBack();
+                this.currentViewState = ViewState.FACTORY_OVERVIEW;
+                setAllMachineOutline(false);
+
             }
         }
 
@@ -82,39 +97,7 @@ namespace DGFactory{
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if(this.currentViewState == ViewState.MACHINE_DETAIL)
-                {
-                    //如果是工厂视图要退出到工厂全景
-                    //TODO:
-                    this.currentViewState = ViewState.FACTORY_OVERVIEW;
-                    setAllMachineOutline(false);
-                   
-                }
-            }
-
-            if(this.currentViewState == ViewState.TRANSITION)
-            {
-                //正在转换的动画中
-                MachineController mc = getSelectedMachine();
-                Vector3 targetPos = mc.DetailAnchor.position;
-                Vector3 direciton = Vector3.Normalize(targetPos - _originalCamraPosition);
-                float distance = Vector3.Distance(Camera.main.transform.position, targetPos);
-                Debug.Log("Transition distance is : " + distance);
-                Debug.Log("Target pos is : " + targetPos);
-
-
-                if (distance < 0.1f)
-                {
-                    Camera.main.transform.position = targetPos;
-                    this.currentViewState = ViewState.MACHINE_DETAIL;
-                }
-                else
-                {
-                    Camera.main.transform.position += direciton * Time.deltaTime * 6f;
-                    Camera.main.transform.rotation = Quaternion.Slerp(Camera.main.transform.rotation, mc.DetailAnchor.rotation, 2f * Time.deltaTime);
-
-                }
-
+                hideMachineDetail();
             }
         }
 
