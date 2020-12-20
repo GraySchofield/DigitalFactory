@@ -1790,6 +1790,7 @@ GameObject:
   - component: {fileID: 136843552}
   - component: {fileID: 136843554}
   - component: {fileID: 136843553}
+  - component: {fileID: 136843555}
   m_Layer: 5
   m_Name: FactoryInfo
   m_TagString: Untagged
@@ -1856,6 +1857,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 136843551}
   m_CullTransparentMesh: 0
+--- !u!114 &136843555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 136843551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaa7088e88c17aa44b25f7486830daf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &142583964
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6810,7 +6823,7 @@ GameObject:
   - component: {fileID: 588903080}
   - component: {fileID: 588903079}
   m_Layer: 5
-  m_Name: Scroll View
+  m_Name: ScrollView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11099,6 +11112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UIMachineDetail: {fileID: 1908229199}
+  UIProductionLine: {fileID: 136843555}
   MachineControllers:
   - {fileID: 2044268746}
   - {fileID: 1034211822}
@@ -16013,7 +16027,7 @@ GameObject:
   - component: {fileID: 1359611990}
   - component: {fileID: 1359611989}
   m_Layer: 5
-  m_Name: Button
+  m_Name: ButtonClose
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

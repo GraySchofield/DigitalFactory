@@ -5,10 +5,7 @@ using UnityEngine.UI;
 
 namespace DGFactory
 {
-
-    public delegate void OnDismiss();
-
-    public class UIMachineDetail : MonoBehaviour
+    public class UIMachineDetail : BaseUI
     {
         public Sprite ImageYes;
         public Sprite ImageNo;
@@ -16,9 +13,6 @@ namespace DGFactory
         public Color ColorNo;
 
         private Machine _currentMachine;
-        private OnDismiss _onDismiss;
-
-        private Button _btnClose;
         private GameObject _panelErrorProvention;
         private GameObject _sampleErrorState;
 
@@ -27,23 +21,14 @@ namespace DGFactory
 
         //TODO: EHS 数据显示还没有
 
-        void Awake()
+        protected override void Awake()
         {
-            _btnClose = transform.Find("title/ButtonClose").GetComponent<Button>();
+            base.Awake();
             Transform content = transform.Find("ScrollView/Viewport/Content").transform;
             _panelErrorProvention = content.Find("PanelErrorProvention").gameObject;
             _sampleErrorState = content.Find("PanelErrorProvention/ErrorState").gameObject;
 
             _workerState = content.Find("WorkerState").gameObject;
-
-
-            _btnClose.onClick.AddListener(() => {
-                Hide();
-                if (this._onDismiss != null)
-                {
-                    this._onDismiss();
-                }
-            });
             
             //初始化隐藏这个UI
             Hide();
@@ -52,9 +37,9 @@ namespace DGFactory
 
         public void Show(Machine machine, OnDismiss onDismiss)
         {
+            base.Show();
             _currentMachine = machine;
             _onDismiss = onDismiss;
-            gameObject.SetActive(true);
             Refresh();
         }
             
@@ -105,11 +90,6 @@ namespace DGFactory
             iconState.sprite = isNormal ? ImageYes : ImageNo;
             iconState.color = isNormal ? ColorYes : ColorNo;
             textState.text = isNormal ? "正常" : "异常";
-        }
-
-        public void Hide()
-        {
-            gameObject.SetActive(false);
         }
 
         // Start is called before the first frame update

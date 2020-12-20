@@ -20,6 +20,7 @@ namespace DGFactory{
 
         #region UIControls
         public UIMachineDetail UIMachineDetail;
+        public UIProductionLine UIProductionLine;
         #endregion
 
         public Factory CurrentFactory;
@@ -155,6 +156,9 @@ namespace DGFactory{
             }
 
             CurrentFactory.addProductLine(line);
+
+            UIProductionLine.Refresh(line);
+
         }
         
     }
