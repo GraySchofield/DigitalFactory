@@ -17,16 +17,21 @@ namespace DGFactory{
     /// </summary>
     public class GameManager : BaseManager<GameManager>
     {
+
+        #region UIControls
+        public UIMachineDetail UIMachineDetail;
+        #endregion
+
         public Factory CurrentFactory;
         public MachineController[] MachineControllers;
-        private ViewState currentViewState;
+        private ViewState _currentViewState;
         private TransitionAndLookAt _cameraTransitor;
 
         protected void Awake()
         {
             base.Awake();
             _cameraTransitor = Camera.main.GetComponent<TransitionAndLookAt>();
-            currentViewState = ViewState.FACTORY_OVERVIEW;
+            _currentViewState = ViewState.FACTORY_OVERVIEW;
             CurrentFactory = new Factory();
 
             //Test
@@ -70,24 +75,27 @@ namespace DGFactory{
 
         private void showMachineDetail(MachineController mControler)
         {
-            if (this.currentViewState == ViewState.FACTORY_OVERVIEW)
+            if (this._currentViewState == ViewState.FACTORY_OVERVIEW)
             {
                 //如果是工厂全景，这里要放大到工厂视图
-                //TODO:
                 _cameraTransitor.transitionTo(mControler.DetailAnchor.position, mControler.DetailAnchor.rotation);
-                currentViewState = ViewState.MACHINE_DETAIL;
+                _currentViewState = ViewState.MACHINE_DETAIL;
                 mControler.SetOutline(true);
+                UIMachineDetail.Show(mControler.CurrentMachine, ()=> {
+                    hideMachineDetail();
+                });
+                
             }
         }
 
         private void hideMachineDetail()
         {
-            if (this.currentViewState == ViewState.MACHINE_DETAIL)
+            if (this._currentViewState == ViewState.MACHINE_DETAIL)
             {
                 //如果是工厂视图要退出到工厂全景
                 //TODO:
                 _cameraTransitor.transitionBack();
-                this.currentViewState = ViewState.FACTORY_OVERVIEW;
+                this._currentViewState = ViewState.FACTORY_OVERVIEW;
                 setAllMachineOutline(false);
 
             }
@@ -95,10 +103,7 @@ namespace DGFactory{
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                hideMachineDetail();
-            }
+         
         }
 
         private MachineController getSelectedMachine()
@@ -128,11 +133,17 @@ namespace DGFactory{
                 Machine m = new Machine("TestMachine" + i);
                 Worker worker = new Worker(i);
                 m.WorkerIn(worker);
+                if(i == 0)
+                {
+                    worker.State = WorkingState.OFF;
+                }
 
                 if(i == 0){
                     m.CurrentWatchItems.Add(new WatchItem("YaRuLuoSi", "压入螺丝监测"));
                     m.CurrentWatchItems.Add(new WatchItem("DuiKuaiLouZhuang", "推块漏装监测"));
-                    m.CurrentWatchItems.Add(new WatchItem("TanPianFanZhuang", "弹片反装监测"));
+                    WatchItem item3 = new WatchItem("TanPianFanZhuang", "弹片反装监测");
+                    item3.IsNormal = false;
+                    m.CurrentWatchItems.Add(item3);
                 }
 
                 if(i == 5){

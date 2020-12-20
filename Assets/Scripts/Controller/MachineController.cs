@@ -24,6 +24,15 @@ namespace DGFactory
             }
         }
 
+        public Machine CurrentMachine
+        {
+            get
+            {
+                return _currentMachine;
+            }
+        }
+
+
         /// <summary>
         /// 详情相机对准位置
         /// </summary>
