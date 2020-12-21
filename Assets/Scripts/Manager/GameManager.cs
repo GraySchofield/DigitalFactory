@@ -104,7 +104,10 @@ namespace DGFactory{
 
         private void Update()
         {
-         
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                UIProductionLine.Show();
+            }
         }
 
         private MachineController getSelectedMachine()
