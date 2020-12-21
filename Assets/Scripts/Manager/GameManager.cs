@@ -137,9 +137,15 @@ namespace DGFactory{
                 if(i == 0)
                 {
                     worker.State = WorkingState.OFF;
+                    m.CurrentEHS.DoorData.Add(true);
+                    m.CurrentEHS.DoorData.Add(true);
+                    m.CurrentEHS.DoorData.Add(false);
+                    m.CurrentEHS.DoorData.Add(true);
+
+
                 }
 
-                if(i == 0){
+                if (i == 0){
                     m.CurrentWatchItems.Add(new WatchItem("YaRuLuoSi", "压入螺丝监测"));
                     m.CurrentWatchItems.Add(new WatchItem("DuiKuaiLouZhuang", "推块漏装监测"));
                     WatchItem item3 = new WatchItem("TanPianFanZhuang", "弹片反装监测");
@@ -147,9 +153,11 @@ namespace DGFactory{
                     m.CurrentWatchItems.Add(item3);
                 }
 
-                if(i == 5){
+                if(i == 4){
                     m.CurrentWatchItems.Add(new WatchItem("QiuTouXiaoLou", "球头销漏监测"));
                     m.CurrentWatchItems.Add(new WatchItem("TiaoJieLuoDing", "调节螺钉装监测"));
+                    m.CurrentEHS.DoorData.Add(true);
+                    m.CurrentEHS.DoorData.Add(true);
                 }
 
                 line.Machines.Add(m);

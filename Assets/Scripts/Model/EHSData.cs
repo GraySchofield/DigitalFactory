@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DGFactory{
     /// <summary>
@@ -41,9 +42,10 @@ namespace DGFactory{
         /// <summary>
         /// 开关门检测
         /// </summary>
-        public float DoorData{
+        public List<bool> DoorData
+        {
             get;
-            set;
+            private set;
         }
 
         public EHSData()
@@ -52,8 +54,7 @@ namespace DGFactory{
             ButtonLeft = true;
             ButtonRight = true;
             ButtonEmergency = false;
-            DoorData = 0f;
-
+            DoorData = new List<bool>();
         }
     }
 }

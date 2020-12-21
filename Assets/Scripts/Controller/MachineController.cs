@@ -16,6 +16,11 @@ namespace DGFactory
         private Outline _outline;
 
         private Transform _detailAnchor;
+            
+        //下级组件
+        private EHSController _ehsController;
+        public WorkerController WorkerContoller;
+       
 
         public bool IsSelected{
             get
@@ -50,12 +55,20 @@ namespace DGFactory
             _outline.enabled = false;
 
             _detailAnchor = transform.Find("DetailAnchor");
+            _ehsController = transform.Find("EHS").GetComponent<EHSController>();
         }
 
+        /// <summary>
+        /// 设定显示的数据
+        /// </summary>
+        /// <param name="machine"></param>
+        /// <param name="onTap"></param>
         public void Refresh(Machine machine, OnTabMachine onTap)
         {
             _currentMachine = machine;
             _onTap = onTap;
+            _ehsController.Refresh(machine.CurrentEHS);
+            WorkerContoller.Refresh(machine.CurrentWorker);
         }
 
         // Update is called once per frame

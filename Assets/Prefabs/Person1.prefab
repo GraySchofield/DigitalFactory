@@ -2488,6 +2488,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5841881934692270602}
   - component: {fileID: 5789051135988552198}
+  - component: {fileID: 70185460}
+  - component: {fileID: 70185459}
   m_Layer: 0
   m_Name: Person1
   m_TagString: Untagged
@@ -2502,7 +2504,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5838569305323548648}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 19.82, y: 0.431, z: 12.99}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
@@ -2531,6 +2533,38 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &70185460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838569305323548648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 4
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
+--- !u!114 &70185459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838569305323548648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4fd13a2a5da543129d525799a272c32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActiveColor: {r: 0.05900679, g: 0.9622642, b: 0.06954058, a: 0.6666667}
+  DeactiveColor: {r: 0.8773585, g: 0.10280086, b: 0.062077243, a: 0.56078434}
 --- !u!1 &5838600914330921330
 GameObject:
   m_ObjectHideFlags: 0
