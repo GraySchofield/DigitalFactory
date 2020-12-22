@@ -21,6 +21,7 @@ namespace DGFactory{
         #region UIControls
         public UIMachineDetail UIMachineDetail;
         public UIProductionLine UIProductionLine;
+        public UILoading UILoading;
         #endregion
 
         public Factory CurrentFactory;
@@ -28,24 +29,14 @@ namespace DGFactory{
         private ViewState _currentViewState;
         private TransitionAndLookAt _cameraTransitor;
 
-        protected void Awake()
+        protected override void Awake()
         {
             base.Awake();
             _cameraTransitor = Camera.main.GetComponent<TransitionAndLookAt>();
             _currentViewState = ViewState.FACTORY_OVERVIEW;
-            CurrentFactory = new Factory();
-
-            //Test
-            generateTestData();
-
-            //Test Commit
+            UILoading.Show();
         }
 
-        private void Start()
-        {
-            //initialzize the machine controllers
-            InitMachineControllers();
-        }
 
         /// <summary>
         /// 设定全部机器外框
@@ -57,6 +48,20 @@ namespace DGFactory{
             {
                 mc.SetOutline(isVisible);
             }
+        }
+
+
+        /// <summary>
+        /// 传入数据
+        /// </summary>
+        /// <param name="factory"></param>
+        public void Refresh(Factory factory)
+        {
+            CurrentFactory = factory;
+            InitMachineControllers();
+            UIProductionLine.Refresh(CurrentFactory.CurrentLines["门铰链"]);
+            //刷新数据后隐藏Loading
+            UILoading.Hide();
         }
 
         private void InitMachineControllers()
@@ -121,55 +126,6 @@ namespace DGFactory{
             }
 
             return null;
-        }
-
-        //TODO: 需要从服务器获取工厂真实数据
-        /// <summary>
-        /// 测试数据，需要把数据
-        /// </summary>
-        private void generateTestData(){
-
-            Product product = new Product("门铰链");
-
-            ProductLine line = new ProductLine(product, "一汽大众");
-
-            for(int i = 0 ; i < 5 ; i ++){
-                Machine m = new Machine("TestMachine" + i);
-                Worker worker = new Worker(i);
-                m.WorkerIn(worker);
-                if(i == 0)
-                {
-                    worker.State = WorkingState.OFF;
-                    m.CurrentEHS.DoorData.Add(true);
-                    m.CurrentEHS.DoorData.Add(true);
-                    m.CurrentEHS.DoorData.Add(false);
-                    m.CurrentEHS.DoorData.Add(true);
-
-
-                }
-
-                if (i == 0){
-                    m.CurrentWatchItems.Add(new WatchItem("YaRuLuoSi", "压入螺丝监测"));
-                    m.CurrentWatchItems.Add(new WatchItem("DuiKuaiLouZhuang", "推块漏装监测"));
-                    WatchItem item3 = new WatchItem("TanPianFanZhuang", "弹片反装监测");
-                    item3.IsNormal = false;
-                    m.CurrentWatchItems.Add(item3);
-                }
-
-                if(i == 4){
-                    m.CurrentWatchItems.Add(new WatchItem("QiuTouXiaoLou", "球头销漏监测"));
-                    m.CurrentWatchItems.Add(new WatchItem("TiaoJieLuoDing", "调节螺钉装监测"));
-                    m.CurrentEHS.DoorData.Add(true);
-                    m.CurrentEHS.DoorData.Add(true);
-                }
-
-                line.Machines.Add(m);
-            }
-
-            CurrentFactory.addProductLine(line);
-
-            UIProductionLine.Refresh(line);
-
         }
         
     }
