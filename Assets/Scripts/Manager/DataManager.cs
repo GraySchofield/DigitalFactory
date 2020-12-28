@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-
+using SimpleJSON;
 
 namespace DGFactory
 {
+
+    public delegate void DataResponseHandler(JSONNode data);
 
     /// <summary>
     /// 负责获取和服务器沟通来获取数据
@@ -20,7 +22,10 @@ namespace DGFactory
              StartCoroutine(generateTestData());
 
             //True Code, 5 秒拉取一次数据
-            //InvokeRepeating("DataFetchLoop", 0, 5); 
+            //InvokeRepeating("DataFetchLoop", 0, 5);
+
+            //TestCode, only once
+            Invoke("DataFetchLoop", 5);
         }
 
         // Start is called before the first frame update
@@ -32,16 +37,64 @@ namespace DGFactory
 
         private void DataFetchLoop()
         {
-            StartCoroutine(getData());
+            //StartCoroutine(getData(AppConst.RouteOperation, handOperationData));
+            //StartCoroutine(getData(AppConst.RouteEhs , handleEhsData));
+            StartCoroutine(getData(AppConst.RouteWorker, handleWorkerData));
+            //StartCoroutine(getData(AppConst.RoutePy, handlePYData));
+        }
+
+
+        private void handOperationData(JSONNode data)
+        {
+
+        }
+
+        private void handleEhsData(JSONNode data)
+        {
+
+        }
+
+
+        /// <summary>
+        /// 处理工作人员数据
+        /// </summary>
+        /// <param name="data"></param>
+        private void handleWorkerData(JSONNode data)
+        {
+            JSONArray array = data.AsArray;
+            Debug.Log("Worker data : " + array.ToString());
+            ProductLine line = _currentFactory.CurrentLines[AppConst.ProductName];
+            for(int i = 0; i < array.Count; i++)
+            {
+                JSONNode node = array[i];
+
+                Worker worker = line.Machines[node["num"].AsInt - 1].CurrentWorker;
+
+                string state = node["state"].Value;
+                Debug.Log("Work state is : " + state);
+                if (state.Equals(AppConst.StateWork))
+                {
+                    worker.State = WorkingState.ON;
+                }
+                else {
+                    worker.State = WorkingState.OFF;
+                } ;
+                
+            }
+        }
+
+        private void handlePYData(JSONNode data)
+        {
+
         }
 
         /// <summary>
         /// 拉取数据
         /// </summary>
         /// <returns></returns>
-        private IEnumerator getData()
+        private IEnumerator getData(string endPoint, DataResponseHandler hanlder)
         {
-            UnityWebRequest www = UnityWebRequest.Get(AppConst.RequestUrl);
+            UnityWebRequest www = UnityWebRequest.Get(AppConst.RequestUrl + endPoint);
 
             yield return www.SendWebRequest();
 
@@ -54,6 +107,14 @@ namespace DGFactory
             {
                 //TODO: parse the data from server
                 Debug.Log("data from server : " + www.downloadHandler.text);
+                JSONNode node = JSONNode.Parse(www.downloadHandler.text);
+                int code = node["stat"].AsInt;
+                if(code == 0)
+                {
+                    //no error
+                    hanlder(node["data"]);
+
+                }
             }
 
         }
@@ -68,13 +129,13 @@ namespace DGFactory
             if (_currentFactory == null)
                 _currentFactory = new Factory();
 
-            Product product = new Product("门铰链");
+            Product product = new Product(AppConst.ProductName);
 
             ProductLine line = new ProductLine(product, "一汽大众");
 
             for (int i = 0; i < 5; i++)
             {
-                Machine m = new Machine("TestMachine" + i);
+                Machine m = new Machine("TestMachine" + i, i + 1);
                 Worker worker = new Worker(i);
                 m.WorkerIn(worker);
                 if (i == 0)
@@ -84,7 +145,6 @@ namespace DGFactory
                     m.CurrentEHS.DoorData.Add(true);
                     m.CurrentEHS.DoorData.Add(false);
                     m.CurrentEHS.DoorData.Add(true);
-
 
                 }
 

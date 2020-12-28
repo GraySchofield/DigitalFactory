@@ -42,10 +42,10 @@ namespace DGFactory
             set;
         }
 
-        public Machine(string name)
+        public Machine(string name , int id)
         {
             Name = name;
-            this.Id = (int)Math.Floor((double)UnityEngine.Random.Range(1000000, 2000000));
+            this.Id = id;
             CurrentWatchItems = new List<WatchItem>();
             CurrentEHS = new EHSData();
         }

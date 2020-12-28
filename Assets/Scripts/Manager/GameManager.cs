@@ -59,7 +59,7 @@ namespace DGFactory{
         {
             CurrentFactory = factory;
             InitMachineControllers();
-            UIProductionLine.Refresh(CurrentFactory.CurrentLines["门铰链"]);
+            UIProductionLine.Refresh(CurrentFactory.CurrentLines[AppConst.ProductName]);
             //刷新数据后隐藏Loading
             UILoading.Hide();
         }
@@ -70,7 +70,7 @@ namespace DGFactory{
             {
                 for( int i = 0; i < MachineControllers.Length; i++)
                 {
-                    MachineControllers[i].Refresh(CurrentFactory.CurrentLines["门铰链"].Machines[i], (mControler, machine) => {
+                    MachineControllers[i].Refresh(CurrentFactory.CurrentLines[AppConst.ProductName].Machines[i], (mControler, machine) => {
                         Debug.Log("Cicked Machine : " + machine.Name);
                         setAllMachineOutline(false);
                         showMachineDetail(mControler);
