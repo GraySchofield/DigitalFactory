@@ -10,7 +10,7 @@ namespace DGFactory{
         /// <summary>
         /// 光电感应
         /// </summary>
-        public float LightData{
+        public bool LightData{
             get;
             set;
         }
@@ -50,7 +50,7 @@ namespace DGFactory{
 
         public EHSData()
         {
-            LightData = 0f;
+            LightData = true;
             ButtonLeft = true;
             ButtonRight = true;
             ButtonEmergency = false;

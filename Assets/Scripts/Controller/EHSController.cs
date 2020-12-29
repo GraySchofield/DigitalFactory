@@ -44,6 +44,7 @@ namespace DGFactory
                 setSensorState(_leftButton, _currentData.ButtonLeft);
                 setSensorState(_rightButton, _currentData.ButtonRight);
                 setSensorState(_emergencyButton, _currentData.ButtonEmergency);
+                setSensorState(_lightSensor, _currentData.LightData);
 
                 //开关门检测
                 for(int i = 0; i < _doors.Count; i++)
@@ -57,9 +58,6 @@ namespace DGFactory
                         _doors[i].SetActive(false);
                     }
                 }
-
-                //TODO: 光电感应
-
             }
         }
         

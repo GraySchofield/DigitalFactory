@@ -2,10 +2,17 @@
 
 namespace DGFactory{
 
-/// <summary>
-/// 代表机器上面的检测选项
-/// </summary>
-public class WatchItem
+    public enum ErrorState
+    {
+        NORMAL = 0,
+        WARNING = 1,
+        ERROR = 2
+    }
+
+    /// <summary>
+    /// 代表机器上面的检测选项
+    /// </summary>
+    public class WatchItem
 {
     public string ItemKey{
         get;
@@ -19,7 +26,8 @@ public class WatchItem
 
 
     //是否正常运行
-    public bool IsNormal{
+    public ErrorState State
+        {
         get;
         set;
     }
@@ -28,7 +36,7 @@ public class WatchItem
     {
         ItemKey = key;
         ItemName = name;
-        IsNormal = true;
+        State = ErrorState.NORMAL;
     }
 }
 

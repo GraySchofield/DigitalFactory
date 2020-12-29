@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-namespace DGFactory { 
+namespace DGFactory {
     public class Factory
     {
 

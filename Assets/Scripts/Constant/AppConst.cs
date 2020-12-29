@@ -18,6 +18,8 @@ public static class AppConst
     public static string StateWork = "WORK";
     public static string StateWarning = "WARNING";
     public static string StateError = "ERROR";
+
+    public static float DataRefreshRate = 5f;
 }
 
 

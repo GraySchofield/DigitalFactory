@@ -18,14 +18,9 @@ namespace DGFactory
 
         protected override void Awake()
         {
-            //TestCode
-             StartCoroutine(generateTestData());
+            //先获取初始运营数据，用来构建Factory Model
+            StartCoroutine(getData(AppConst.RouteOperation, handOperationData));
 
-            //True Code, 5 秒拉取一次数据
-            //InvokeRepeating("DataFetchLoop", 0, 5);
-
-            //TestCode, only once
-            Invoke("DataFetchLoop", 5);
         }
 
         // Start is called before the first frame update
@@ -37,21 +32,80 @@ namespace DGFactory
 
         private void DataFetchLoop()
         {
-            //StartCoroutine(getData(AppConst.RouteOperation, handOperationData));
-            //StartCoroutine(getData(AppConst.RouteEhs , handleEhsData));
+            StartCoroutine(getData(AppConst.RouteOperation, handOperationData));
+            StartCoroutine(getData(AppConst.RouteEhs, handleEhsData));
             StartCoroutine(getData(AppConst.RouteWorker, handleWorkerData));
-            //StartCoroutine(getData(AppConst.RoutePy, handlePYData));
+            StartCoroutine(getData(AppConst.RoutePy, handlePYData));
         }
 
 
         private void handOperationData(JSONNode data)
         {
+            string productName = data["product"].Value;
+            string customerName = data["customer"].Value;
+            int count = data["quantity"].AsInt;
+            int pace = data["cycle"].AsInt;
+            int badCount = data["ng"].AsInt;
+            AppConst.ProductName = productName;
 
+            if (_currentFactory == null)
+            {
+                //第一次获取到数据的时候生成工厂数据
+                generateInitialData(customerName);
+                InvokeRepeating("DataFetchLoop", 0, AppConst.DataRefreshRate);
+            }
+
+            ProductLine line = _currentFactory.CurrentLines[productName];
+            line.Pace = pace;
+            line.ProductionCount = count;
+            line.BadProductionCount = badCount;
+            
         }
 
         private void handleEhsData(JSONNode data)
         {
+            JSONArray array = data.AsArray;
+            ProductLine line = _currentFactory.CurrentLines[AppConst.ProductName];
 
+            for (int i = 0; i < array.Count; i++)
+            {
+                JSONNode node = array[i];
+                int id = node["num"].AsInt;
+                if (id > line.Machines.Count) continue;
+                Machine m = line.Machines[id - 1];
+                if (id <= line.Machines.Count)  //正常应该只有5 个机器
+                {
+                    if (node["buttons"].Value.Equals("WORK"))
+                    {
+                        m.CurrentEHS.ButtonLeft = true;
+                        m.CurrentEHS.ButtonRight = true;
+                    }
+                    else
+                    {
+                        m.CurrentEHS.ButtonLeft = false;
+                        m.CurrentEHS.ButtonRight = false;
+                    }
+
+                    if (node["bright"].Value.Equals("WORK"))
+                    {
+                        m.CurrentEHS.LightData = true;
+                    }
+                    else
+                    {
+                        m.CurrentEHS.LightData = false;
+                    }
+
+                    m.CurrentEHS.DoorData.Clear();
+
+                    JSONArray doorArray = node["doors"].AsArray;
+                    for(int j = 0;  j < doorArray.Count; j++)
+                    {
+                        JSONNode dNode = doorArray[j];
+                        m.CurrentEHS.DoorData.Add(dNode["state"].Value.Equals("WORK"));
+                    }
+                }
+            }
+            
         }
 
 
@@ -64,7 +118,8 @@ namespace DGFactory
             JSONArray array = data.AsArray;
             Debug.Log("Worker data : " + array.ToString());
             ProductLine line = _currentFactory.CurrentLines[AppConst.ProductName];
-            for(int i = 0; i < array.Count; i++)
+       
+            for (int i = 0; i < array.Count; i++)
             {
                 JSONNode node = array[i];
 
@@ -78,13 +133,46 @@ namespace DGFactory
                 }
                 else {
                     worker.State = WorkingState.OFF;
-                } ;
-                
+                };
+
             }
         }
 
+
+        /// <summary>
+        /// 处理防错状态数据
+        /// </summary>
+        /// <param name="data"></param>
         private void handlePYData(JSONNode data)
         {
+            JSONArray array = data.AsArray;
+            ProductLine line = _currentFactory.CurrentLines[AppConst.ProductName];
+            foreach (Machine m in line.Machines)
+            {
+                m.CurrentWatchItems.Clear();
+            };
+            for (int i = 0; i < array.Count; i++)
+            {
+                JSONNode node = array[i];
+                int id = node["num"].AsInt;
+                if (id > line.Machines.Count) continue;
+
+                WatchItem item = new WatchItem(node["title"].Value, node["label"].Value);
+                string state = node["state"].Value;
+                if (state.Equals("WORK"))
+                {
+                    item.State = ErrorState.NORMAL;
+                }else if (state.Equals("WARNING"))
+                {
+                    item.State = ErrorState.WARNING;
+                }
+                else
+                {
+                    item.State = ErrorState.ERROR;
+                }
+               
+                line.Machines[id - 1].CurrentWatchItems.Add(item);
+            }
 
         }
 
@@ -124,53 +212,25 @@ namespace DGFactory
         /// <summary>
         /// 测试数据，需要把数据
         /// </summary>
-        private IEnumerator generateTestData()
+        private void generateInitialData(string customer)
         {
             if (_currentFactory == null)
                 _currentFactory = new Factory();
 
             Product product = new Product(AppConst.ProductName);
 
-            ProductLine line = new ProductLine(product, "一汽大众");
+            ProductLine line = new ProductLine(product, customer);
 
             for (int i = 0; i < 5; i++)
             {
                 Machine m = new Machine("TestMachine" + i, i + 1);
                 Worker worker = new Worker(i);
                 m.WorkerIn(worker);
-                if (i == 0)
-                {
-                    worker.State = WorkingState.OFF;
-                    m.CurrentEHS.DoorData.Add(true);
-                    m.CurrentEHS.DoorData.Add(true);
-                    m.CurrentEHS.DoorData.Add(false);
-                    m.CurrentEHS.DoorData.Add(true);
-
-                }
-
-                if (i == 0)
-                {
-                    m.CurrentWatchItems.Add(new WatchItem("YaRuLuoSi", "压入螺丝监测"));
-                    m.CurrentWatchItems.Add(new WatchItem("DuiKuaiLouZhuang", "推块漏装监测"));
-                    WatchItem item3 = new WatchItem("TanPianFanZhuang", "弹片反装监测");
-                    item3.IsNormal = false;
-                    m.CurrentWatchItems.Add(item3);
-                }
-
-                if (i == 4)
-                {
-                    m.CurrentWatchItems.Add(new WatchItem("QiuTouXiaoLou", "球头销漏监测"));
-                    m.CurrentWatchItems.Add(new WatchItem("TiaoJieLuoDing", "调节螺钉装监测"));
-                    m.CurrentEHS.DoorData.Add(true);
-                    m.CurrentEHS.DoorData.Add(true);
-                }
-
                 line.Machines.Add(m);
             }
 
             _currentFactory.addProductLine(line);
 
-            yield return new WaitForSeconds(2f);
 
             GameManager.Instance.Refresh(_currentFactory);
 
