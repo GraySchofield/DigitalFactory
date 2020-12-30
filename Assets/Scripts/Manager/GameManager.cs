@@ -28,7 +28,9 @@ namespace DGFactory{
         public MachineController[] MachineControllers;
         private ViewState _currentViewState;
         private TransitionAndLookAt _cameraTransitor;
+        public GameObject MainLight;
 
+      
         protected override void Awake()
         {
             base.Awake();
@@ -46,7 +48,7 @@ namespace DGFactory{
         {
             foreach(MachineController mc in MachineControllers)
             {
-                mc.SetOutline(isVisible);
+                mc.SetSelected(isVisible);
             }
         }
 
@@ -72,8 +74,11 @@ namespace DGFactory{
                 {
                     MachineControllers[i].Refresh(CurrentFactory.CurrentLines[AppConst.ProductName].Machines[i], (mControler, machine) => {
                         Debug.Log("Cicked Machine : " + machine.Name);
-                        setAllMachineOutline(false);
-                        showMachineDetail(mControler);
+                        if (this._currentViewState == ViewState.FACTORY_OVERVIEW)
+                        {
+                            setAllMachineOutline(false);
+                            showMachineDetail(mControler);
+                        }
                     });
                 }
             }
@@ -86,7 +91,8 @@ namespace DGFactory{
                 //如果是工厂全景，这里要放大到工厂视图
                 _cameraTransitor.transitionTo(mControler.DetailAnchor.position, mControler.DetailAnchor.rotation);
                 _currentViewState = ViewState.MACHINE_DETAIL;
-                mControler.SetOutline(true);
+                mControler.SetSelected(true);
+                MainLight.SetActive(false);
                 UIMachineDetail.Show(mControler.CurrentMachine, ()=> {
                     hideMachineDetail();
                 });
@@ -100,6 +106,7 @@ namespace DGFactory{
             {
                 //如果是工厂视图要退出到工厂全景
                 //TODO:
+                MainLight.SetActive(true);
                 _cameraTransitor.transitionBack();
                 this._currentViewState = ViewState.FACTORY_OVERVIEW;
                 setAllMachineOutline(false);

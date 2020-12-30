@@ -16,6 +16,8 @@ namespace DGFactory
         private Outline _outline;
 
         private Transform _detailAnchor;
+
+        private GameObject _machineLight;
             
         //下级组件
         private EHSController _ehsController;
@@ -56,6 +58,8 @@ namespace DGFactory
 
             _detailAnchor = transform.Find("DetailAnchor");
             _ehsController = transform.Find("EHS").GetComponent<EHSController>();
+            _machineLight = transform.Find("LightMachine").gameObject;
+            _machineLight.SetActive(false);
         }
 
         /// <summary>
@@ -89,12 +93,13 @@ namespace DGFactory
         }
 
         /// <summary>
-        /// 是否显示外框
+        /// 是否选中机器
         /// </summary>
         /// <param name="isVisible"></param>
-        public void SetOutline(bool isVisible)
+        public void SetSelected(bool isSelected)
         {
-            _outline.enabled = isVisible;
+            _outline.enabled = isSelected;
+            _machineLight.SetActive(isSelected);
         }
     }
 
