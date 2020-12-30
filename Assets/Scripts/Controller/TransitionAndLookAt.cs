@@ -54,15 +54,16 @@ public class TransitionAndLookAt : MonoBehaviour
             Vector3 direciton = Vector3.Normalize(_targetPosition - transform.position);
             float distance = Vector3.Distance(transform.position, _targetPosition);
 
-            if (distance < 0.1f)
+            if (distance < 0.2f)
             {
                 transform.position = _targetPosition;
+                transform.rotation = _targetRotation;
                 _state = TransitionState.NONE;
             }
             else
             {
                 transform.position += direciton * Time.deltaTime * 10f;
-                transform.rotation = Quaternion.Slerp(transform.rotation, _targetRotation, 2f * Time.deltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, _targetRotation, 2.5f * Time.deltaTime);
 
             }
 
