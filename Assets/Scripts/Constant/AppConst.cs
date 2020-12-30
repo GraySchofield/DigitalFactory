@@ -19,7 +19,7 @@ public static class AppConst
     public static string StateWarning = "WARNING";
     public static string StateError = "ERROR";
 
-    public static float DataRefreshRate = 5f;
+    public static float DataRefreshRate = 2f;
 }
 
 

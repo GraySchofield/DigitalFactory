@@ -62,7 +62,7 @@ public class TransitionAndLookAt : MonoBehaviour
             }
             else
             {
-                transform.position += direciton * Time.deltaTime * 10f;
+                transform.position += direciton * Time.deltaTime * 6f;
                 transform.rotation = Quaternion.Slerp(transform.rotation, _targetRotation, 2.5f * Time.deltaTime);
 
             }
